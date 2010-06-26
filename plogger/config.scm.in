@@ -1,0 +1,85 @@
+;; -*- scheme -*-
+;; Plogger - Time tracking software
+;; Copyright (C) 2010 Romel Raúl Sandoval-Palomo
+;;
+;; This program is free software; you can redistribute it and/or    
+;; modify it under the terms of the GNU General Public License as   
+;; published by the Free Software Foundation; either version 3 of   
+;; the License, or (at your option) any later version.              
+;;                                                                  
+;; This program is distributed in the hope that it will be useful,  
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of   
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    
+;; GNU General Public License for more details.                     
+;;                                                                  
+;; You should have received a copy of the GNU General Public License
+;; along with this program; if not, contact:
+;;
+;; Free Software Foundation           Voice:  +1-617-542-5942
+;; 59 Temple Place - Suite 330        Fax:    +1-617-542-2652
+;; Boston, MA  02111-1307,  USA       gnu@gnu.org
+
+(define-module (plogger config)
+  :use-module (ice-9 rdelim)
+  :use-module (dbi dbi)
+  :export (*app-name* *version* rc-file db-path db-open db-close rc))
+
+(define *version* "@VERSION@")
+
+(define *app-name* "plogger")
+
+(define *init-sql* 
+  (string-append "@prefix@" "/share/plogger/sql/init.sql"))
+
+(define rc-dir
+  (string-append (getenv "HOME") "/." *app-name*))
+
+(define rc-file
+  (string-append rc-dir "/" *app-name* "-rc.scm"))
+
+(define db-path
+  (string-append rc-dir "/" *app-name* ".db"))
+
+(define init-db 
+  (lambda (db-obj init-sql-file)
+    (let ( (query (read-delimited ";" init-sql-file)) )
+      (if (not (eof-object? query))
+		  (begin
+			(dbi-query db-obj query)
+			(init-db db-obj init-sql-file))
+		  ))))
+
+(define init-rc-file
+  (lambda ()
+    (let ((file (open-file rc-file "w")))
+      (write (list (cons "current-activity" #f)) file)(newline file)
+      (close-port file)
+      )))
+
+(define db-open 
+  (lambda () (dbi-open "sqlite3" db-path)))
+
+(define db-close
+  (lambda (db)
+    (dbi-close db)))
+
+(define first-run?
+  (not (access? rc-dir (logior R_OK W_OK))))
+
+(if first-run?
+    (begin
+      (mkdir rc-dir)
+      (let ((init-sql-file (open-input-file *init-sql*))
+			(db-obj (db-open)))
+	(begin 
+	  (init-db db-obj init-sql-file)
+	  (close-input-port init-sql-file)
+	  (db-close db-obj)
+	  (init-rc-file)
+      ))))
+
+(define rc 
+  (let ((rc-port (open-file rc-file "r")))
+	(let ((rc-alist (read rc-port)))
+	  (close-port rc-port)
+	  rc-alist)))

@@ -1,0 +1,116 @@
+#!/bin/sh
+# -*- scheme -*-
+exec guile --debug -e main -s $0 "$@"
+!#
+;; Plogger - Time tracking software
+;; Copyright (C) 2010 Romel Raúl Sandoval-Palomo
+;;
+;; This program is free software; you can redistribute it and/or    
+;; modify it under the terms of the GNU General Public License as   
+;; published by the Free Software Foundation; either version 3 of   
+;; the License, or (at your option) any later version.              
+;;                                                                  
+;; This program is distributed in the hope that it will be useful,  
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of   
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    
+;; GNU General Public License for more details.                     
+;;                                                                  
+;; You should have received a copy of the GNU General Public License
+;; along with this program; if not, contact:
+;;
+;; Free Software Foundation           Voice:  +1-617-542-5942
+;; 59 Temple Place - Suite 330        Fax:    +1-617-542-2652
+;; Boston, MA  02111-1307,  USA       gnu@gnu.org
+
+(use-modules (plogger config)
+			 (plogger commands)
+             (ice-9 getopt-long))
+
+(define *debug-mode* #f)
+
+(define (execute-command c options arg)
+  (cond
+   ((string= c "add-project") (add-project options arg))
+   ((string= c "show-projects") (show-projects options arg))
+   ((string= c "add-issue-type") (add-issue-type options arg))
+   ((string= c "show-issue-types") (show-issue-types options arg))
+   ((string= c "add-issue") (add-issue options arg))
+   ((string= c "show-issues") (show-issues options arg))
+   ((string= c "add-phase") (add-phase options arg))
+   ((string= c "show-phases") (show-phases options arg))
+   ((string= c "start") (start options arg))
+   ((string= c "end") (end options arg))
+   ((string= c "interrupt") (interrupt options arg))
+   ((string= c "continue") (continue options arg))
+   ((string= c "query") (query options arg))
+))
+
+(define (main args)
+  (let* ((option-spec '((issue (single-char #\i) (value #t))
+			(phase (single-char #\f) (value #t))
+			(project (single-char #\p) (value #t))
+			(comment (single-char #\c) (value #t))
+			(progress (single-char #\a) (value #t))
+			(issue-type (single-char #\t) (value #t))
+			(query (single-char #\q) (value #t))
+			(debug (single-char #\d) (value #f))
+			(version (single-char #\v) (value #f))
+			(help (single-char #\h) (value #f))))
+		 (options (getopt-long args option-spec))
+		 (command (car (cdr args)))
+		 (argument (car (last-pair args)))
+		 (help-wanted (option-ref options 'help #f))
+		 (version-wanted (option-ref options 'version #f))
+		 (debug-wanted (option-ref options 'debug #f)))
+    (if debug-wanted
+	(set! *debug-mode* #t))
+    (if (or version-wanted help-wanted)
+		(begin
+		  (if version-wanted
+			  (display 
+			   (format #f "\
+plogger ~a
+
+Copyright (C) 2010 Romel Raúl Sandoval-Palomo.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+" 
+					   *version*)))
+		  (if help-wanted
+			  (display "\
+Usage: plogger COMMAND [OPTION]... [ARGUMENT]
+
+Plogger is a time tracking program.
+
+Commands:
+
+ start            Starts tracking an activity, options: -i -f -p
+ end              Stops tracking current activity, options: -a -c
+ interrupt        Holds activity tracking, no options
+ continue         Continues activity tracking, options: -c
+ add-project      Adds a project to track, options: -p
+ show-projects    Show all projects, no options
+ add-issue-type   Adds an issue type, options: -t
+ show-issue-types Show all issue types, no options
+ add-issue        Adds an issue to track, options: -i -t -p
+ show-issues      Show un-resolved issues, options: [-p]
+ add-phase        Adds a phase, options: -f
+ show-phases      Show all phases, no options
+ query            Execute an SQL query, no options
+
+Options:
+
+ -p, --project          Some project with issues
+ -i, --issue            Issue you want to track
+ -t, --issue-type       Issue type
+ -a, --progress         The progress made on issue
+ -f, --phase            Common issues' phases
+ -c, --comment          Some comment for an activity or an interruption
+ -h, --help             This help message
+ -v, --version          A brief version message
+ -d, --debug            Hack the world
+
+Report bugs to <romel at lavabit.com>.
+")))
+	(begin
+	  (execute-command command options argument)))))
