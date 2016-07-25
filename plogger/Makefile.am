@@ -11,8 +11,8 @@ ploggerscm_DATA = \
 	text.scm \
 	phases.scm \
 	projects.scm \
-	issues.scm \
-	issue-types.scm \
+	tasks.scm \
+	task-types.scm \
 	times.scm \
 	validations.scm \
 	activities.scm \

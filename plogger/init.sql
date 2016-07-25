@@ -18,6 +18,9 @@
 -- 59 Temple Place - Suite 330        Fax:    +1-617-542-2652
 -- Boston, MA  02111-1307,  USA       gnu@gnu.org
 
+-- Semicolon below was added to facilitate delimited text reading from scheme.
+-- ;
+
 create table projects (
        id integer primary key, 
        title varchar(32) unique
@@ -28,18 +31,18 @@ create table phases (
        title varchar(32) unique
 );
 
-create table issue_types (
+create table task_types (
        id integer primary key,
        title varchar(32) unique
 );
 
-create table issues (
+create table tasks (
        id integer primary key,
        title varchar(32),
        progress decimal(3,2) default 0.0,
        type_id integer,
        project_id integer,
-       foreign key(type_id) references issue_types(id),
+       foreign key(type_id) references task_types(id),
        foreign key(project_id) references projects(id)
 );
 
@@ -48,9 +51,9 @@ create table activities (
        start_time timestamp default current_timestamp,
        end_time timestamp,
        comment varchar(1024),
-       issue_id integer,
+       task_id integer,
        phase_id integer,
-       foreign key(issue_id) references issues(id),
+       foreign key(task_id) references tasks(id),
        foreign key(phase_id) references phases(id)
 );
 

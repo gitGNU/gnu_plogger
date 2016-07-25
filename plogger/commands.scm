@@ -20,8 +20,8 @@
 
 (define-module (plogger commands)
   :use-module (plogger projects)
-  :use-module (plogger issue-types)
-  :use-module (plogger issues)
+  :use-module (plogger task-types)
+  :use-module (plogger tasks)
   :use-module (plogger phases)
   :use-module (plogger activities)
   :use-module (plogger interruptions)
@@ -30,8 +30,8 @@
   :use-module (plogger text)
   :use-module (ice-9 getopt-long)
   :use-module (dbi dbi)
-  :export (add-project show-projects add-issue-type show-issue-types 
-           add-issue show-issues add-phase show-phases 
+  :export (add-project show-projects add-task-type show-task-types 
+           add-task show-tasks add-phase show-phases 
 		   start end interrupt continue query))
 
 (define (query options arg)
@@ -59,31 +59,31 @@
 	(alists->table (db-list-result db))
 	(db-close db)))
 
-(define (add-issue-type options arg)
+(define (add-task-type options arg)
   (let ((db (db-open)))
-    (new-issue-type db (option-ref options 'issue-type #f))
+    (new-task-type db (option-ref options 'task-type #f))
     (db-close db)))
 
-(define (show-issue-types options arg)
+(define (show-task-types options arg)
   (let ((db (db-open)))
-	(select-issue-types db)
+	(select-task-types db)
 	(alists->table (db-list-result db))
 	(db-close db)))
 
-(define (add-issue options arg)
+(define (add-task options arg)
   (let ((db (db-open)))
-    (new-issue db 
-	       (option-ref options 'issue-type #f)
-	       (option-ref options 'issue #f)
+    (new-task db 
+	       (option-ref options 'task-type #f)
+	       (option-ref options 'task #f)
 	       (option-ref options 'project #f))
     (db-close db)))
 
-(define (show-issues options arg)
+(define (show-tasks options arg)
   (let ((db (db-open))
 		(project-title (option-ref options 'project #f)))
 	(if project-title
-		(select-issues db project-title)
-		(select-issues db))
+		(select-tasks db project-title)
+		(select-tasks db))
 	(alists->table (db-list-result db))
 	(db-close db)))
 
@@ -96,7 +96,7 @@
 (define (start options arg)
   (let ((db (db-open)))
     (start-activity db 
-		    (option-ref options 'issue #f)
+		    (option-ref options 'task #f)
 		    (option-ref options 'phase #f)
 		    (option-ref options 'project #f))
     (db-close db)))

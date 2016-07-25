@@ -21,7 +21,7 @@
 (define-module (plogger activities)
   :use-module (plogger validations)
   :use-module (plogger phases)
-  :use-module (plogger issues)
+  :use-module (plogger tasks)
   :use-module (plogger times)
   :use-module (dbi dbi)
   :export (current-activity get-current-activity-id start-activity 
@@ -44,26 +44,26 @@
 		 #f))))
 
 (define insert-activity
-  (lambda (db issue phase project)
-    (validate-string-length issue 32)
+  (lambda (db task phase project)
+    (validate-string-length task 32)
     (validate-string-length phase 32)
     (validate-string-length project 32)
     (let ((phase-id (get-phase-id db phase))
 		  ;(rc-port (open-file rc-file "w"))
-		  (issue-id (get-issue-id db issue project)))
+		  (task-id (get-task-id db task project)))
       (dbi-query 
        db 
        (format #f 
-			   "insert into activities (issue_id, phase_id) values ('~d', ~d)"
-			   issue-id phase-id))
+			   "insert into activities (task_id, phase_id) values ('~d', ~d)"
+			   task-id phase-id))
 	  ;(assoc-set! rc "current-activity" ))))
 )))
 
-(define get-issue-id-from-activity-id
+(define get-task-id-from-activity-id
   (lambda (db activity-id)
-    (dbi-query db (format #f "select issue_id from activities where id = ~d" 
+    (dbi-query db (format #f "select task_id from activities where id = ~d" 
 			  activity-id))
-    (cdr (assoc "issue_id" (dbi-get_row db)))))
+    (cdr (assoc "task_id" (dbi-get_row db)))))
 
 (define update-activity-end-time-and-comment
   (lambda (db activity-id time-string comment)
@@ -74,20 +74,20 @@
 	 time-string comment activity-id))))
 
 (define start-activity
-  (lambda (db issue phase project)
+  (lambda (db task phase project)
 	(if (not (current-activity db))
-		(insert-activity db issue phase project)
+		(insert-activity db task phase project)
 		(throw 'exist-activity))))
 
 (define end-activity
-  (lambda (db issue-progress comment)
+  (lambda (db task-progress comment)
 	(let ((activity-id (get-current-activity-id db)))
 	  (if activity-id
 	      (begin
 		(let ((time-string (current-utc-time)))
 		  (update-activity-end-time-and-comment 
 		   db activity-id time-string comment))
-		(let ((issue-id (get-issue-id-from-activity-id db activity-id)))
-		  (update-issue-progress db issue-id issue-progress)
+		(let ((task-id (get-task-id-from-activity-id db activity-id)))
+		  (update-task-progress db task-id task-progress)
 		  ))
 	      (throw 'no-activity)))))

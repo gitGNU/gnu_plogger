@@ -32,10 +32,10 @@ exec guile --debug -e main -s $0 "$@"
   (cond
    ((string= c "add-project") (add-project options arg))
    ((string= c "show-projects") (show-projects options arg))
-   ((string= c "add-issue-type") (add-issue-type options arg))
-   ((string= c "show-issue-types") (show-issue-types options arg))
-   ((string= c "add-issue") (add-issue options arg))
-   ((string= c "show-issues") (show-issues options arg))
+   ((string= c "add-task-type") (add-task-type options arg))
+   ((string= c "show-task-types") (show-task-types options arg))
+   ((string= c "add-task") (add-task options arg))
+   ((string= c "show-tasks") (show-tasks options arg))
    ((string= c "add-phase") (add-phase options arg))
    ((string= c "show-phases") (show-phases options arg))
    ((string= c "start") (start options arg))
@@ -46,12 +46,12 @@ exec guile --debug -e main -s $0 "$@"
 ))
 
 (define (main args)
-  (let* ((option-spec '((issue (single-char #\i) (value #t))
+  (let* ((option-spec '((task (single-char #\i) (value #t))
 			(phase (single-char #\f) (value #t))
 			(project (single-char #\p) (value #t))
 			(comment (single-char #\c) (value #t))
 			(progress (single-char #\a) (value #t))
-			(issue-type (single-char #\t) (value #t))
+			(task-type (single-char #\t) (value #t))
 			(query (single-char #\q) (value #t))
 			(debug (single-char #\d) (value #f))
 			(version (single-char #\v) (value #f))
@@ -90,27 +90,27 @@ Commands:
  continue         Continues activity tracking, options: -c
  add-project      Adds a project to track, options: -p
  show-projects    Show all projects, no options
- add-issue-type   Adds an issue type, options: -t
- show-issue-types Show all issue types, no options
- add-issue        Adds an issue to track, options: -i -t -p
- show-issues      Show un-resolved issues, options: [-p]
+ add-task-type    Adds an task type, options: -t
+ show-task-types  Show all task types, no options
+ add-task         Adds an task to track, options: -i -t -p
+ show-tasks       Show un-resolved tasks, options: [-p]
  add-phase        Adds a phase, options: -f
  show-phases      Show all phases, no options
  query            Execute an SQL query, no options
 
 Options:
 
- -p, --project          Some project with issues
- -i, --issue            Issue you want to track
- -t, --issue-type       Issue type
- -a, --progress         The progress made on issue
- -f, --phase            Common issues' phases
+ -p, --project          Some project with tasks
+ -i, --task             Task you want to track
+ -t, --task-type        Task type
+ -a, --progress         The progress made on task
+ -f, --phase            Common tasks' phases
  -c, --comment          Some comment for an activity or an interruption
  -h, --help             This help message
  -v, --version          A brief version message
  -d, --debug            Hack the world
 
-Report bugs to <romel at lavabit.com>.
+Report bugs to <romel at openmailbox.org>.
 ")))
 	(begin
 	  (execute-command command options argument)))))
