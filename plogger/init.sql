@@ -17,6 +17,7 @@
 -- Free Software Foundation           Voice:  +1-617-542-5942
 -- 59 Temple Place - Suite 330        Fax:    +1-617-542-2652
 -- Boston, MA  02111-1307,  USA       gnu@gnu.org
+------------------------------------------------------------------------------
 
 -- Semicolon below was added to facilitate delimited text reading from scheme.
 -- ;

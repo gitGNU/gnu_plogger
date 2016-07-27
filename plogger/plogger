@@ -46,11 +46,11 @@ exec guile --debug -e main -s $0 "$@"
 ))
 
 (define (main args)
-  (let* ((option-spec '((task (single-char #\i) (value #t))
+  (let* ((option-spec '((task (single-char #\T) (value #t))
 			(phase (single-char #\f) (value #t))
-			(project (single-char #\p) (value #t))
+			(project (single-char #\P) (value #t))
 			(comment (single-char #\c) (value #t))
-			(progress (single-char #\a) (value #t))
+			(progress (single-char #\p) (value #t))
 			(task-type (single-char #\t) (value #t))
 			(query (single-char #\q) (value #t))
 			(debug (single-char #\d) (value #f))
@@ -84,26 +84,26 @@ Plogger is a time tracking program.
 
 Commands:
 
- start            Starts tracking an activity, options: -i -f -p
- end              Stops tracking current activity, options: -a -c
+ start            Starts tracking an activity, options: -T -f -P
+ end              Stops tracking current activity, options: -p -c
  interrupt        Holds activity tracking, no options
  continue         Continues activity tracking, options: -c
- add-project      Adds a project to track, options: -p
+ add-project      Adds a project to track, options: -P
  show-projects    Show all projects, no options
  add-task-type    Adds an task type, options: -t
  show-task-types  Show all task types, no options
- add-task         Adds an task to track, options: -i -t -p
- show-tasks       Show un-resolved tasks, options: [-p]
+ add-task         Adds an task to track, options: -T -t -P
+ show-tasks       Show un-resolved tasks, options: [-P]
  add-phase        Adds a phase, options: -f
  show-phases      Show all phases, no options
  query            Execute an SQL query, no options
 
 Options:
 
- -p, --project          Some project with tasks
- -i, --task             Task you want to track
+ -P, --project=NAME     Some project with tasks
+ -T, --task             Task you want to track
  -t, --task-type        Task type
- -a, --progress         The progress made on task
+ -p, --progress         The progress made on task
  -f, --phase            Common tasks' phases
  -c, --comment          Some comment for an activity or an interruption
  -h, --help             This help message
@@ -114,3 +114,4 @@ Report bugs to <romel at openmailbox.org>.
 ")))
 	(begin
 	  (execute-command command options argument)))))
+
