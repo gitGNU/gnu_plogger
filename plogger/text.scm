@@ -1,5 +1,5 @@
 ;; Plogger - Time tracking software
-;; Copyright (C) 2010 Romel Raúl Sandoval-Palomo
+;; Copyright (C) 2010 Romel Raul Sandoval Palomo
 ;;
 ;; This program is free software; you can redistribute it and/or    
 ;; modify it under the terms of the GNU General Public License as   
@@ -19,7 +19,7 @@
 ;; Boston, MA  02111-1307,  USA       gnu@gnu.org
 
 (define-module (plogger text)
-  :export (alists->table))
+  :export (alists->table alists->list))
 
 (define (extract-headers alist headers)
   (let ((headers (append headers (list (car (car alist))))))
@@ -56,3 +56,19 @@
 		 (rows (extract-rows alists '()))
 		 (lines (append (list headers) rows)))
 	(display-lines lines)))
+
+(define (alists->list alists)
+  (let ((rows (extract-rows alists '())))
+    (display-lines rows)))
+
+(define (list->values list)
+  (let* ((values-with-extra-comma (concatenate
+				   (map (lambda (value)
+					  (format #f "'~a'," value)) list)))
+	 (values (substring tags-with-extra-comma
+			    0
+			    (- (string-leght tags-with-extra-comma) 1))))
+    values))
+
+(define (alist->values list)
+  (list->values (alist->list list)))

@@ -1,5 +1,5 @@
 ;; Plogger - Time tracking software
-;; Copyright (C) 2010 Romel Raúl Sandoval-Palomo
+;; Copyright (C) 2010 Romel Raul Sandoval Palomo
 ;;
 ;; This program is free software; you can redistribute it and/or    
 ;; modify it under the terms of the GNU General Public License as   
@@ -19,10 +19,19 @@
 ;; Boston, MA  02111-1307,  USA       gnu@gnu.org
 
 (define-module (plogger validations)
-  :export (validate-string-length))
+  :use-module (plogger models)
+  :export (validate-string-length
+	   validate-unit))
 
 (define validate-string-length
   (lambda (string max-length)
 	(let ((length (string-length string)))
 	  (if (not (<= length max-length))
 		  (throw 'string-to-big max-length string)))))
+
+(define (validate-unit unit)
+  (validate-string-length (unit-singular unit) 32)
+  (validate-string-length (unit-plural unit) 36))
+
+(define (validate-task task)
+  (validate-string-length (task-description task) 200))

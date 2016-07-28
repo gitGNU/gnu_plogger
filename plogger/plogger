@@ -3,7 +3,7 @@
 exec guile --debug -e main -s $0 "$@"
 !#
 ;; Plogger - Time tracking software
-;; Copyright (C) 2010 Romel Raúl Sandoval-Palomo
+;; Copyright (C) 2010 Romel Raul Sandoval Palomo
 ;;
 ;; This program is free software; you can redistribute it and/or    
 ;; modify it under the terms of the GNU General Public License as   
@@ -31,11 +31,11 @@ exec guile --debug -e main -s $0 "$@"
 (define (execute-command c options arg)
   (cond
    ((string= c "add-project") (add-project options arg))
-   ((string= c "show-projects") (show-projects options arg))
-   ((string= c "add-task-type") (add-task-type options arg))
-   ((string= c "show-task-types") (show-task-types options arg))
+   ((string= c "projects") (projects options arg))
+   ((string= c "add-unit") (add-unit arg))
+   ((string= c "units") (units))
    ((string= c "add-task") (add-task options arg))
-   ((string= c "show-tasks") (show-tasks options arg))
+   ((string= c "tasks") (tasks options arg))
    ((string= c "add-phase") (add-phase options arg))
    ((string= c "show-phases") (show-phases options arg))
    ((string= c "start") (start options arg))
@@ -51,14 +51,14 @@ exec guile --debug -e main -s $0 "$@"
 			(project (single-char #\P) (value #t))
 			(comment (single-char #\c) (value #t))
 			(progress (single-char #\p) (value #t))
-			(task-type (single-char #\t) (value #t))
+			(tags (single-char #\t) (value #t))
 			(query (single-char #\q) (value #t))
 			(debug (single-char #\d) (value #f))
 			(version (single-char #\v) (value #f))
 			(help (single-char #\h) (value #f))))
 		 (options (getopt-long args option-spec))
 		 (command (car (cdr args)))
-		 (argument (car (last-pair args)))
+		 (argument (cdr (cdr args)))
 		 (help-wanted (option-ref options 'help #f))
 		 (version-wanted (option-ref options 'version #f))
 		 (debug-wanted (option-ref options 'debug #f)))
@@ -71,41 +71,40 @@ exec guile --debug -e main -s $0 "$@"
 			   (format #f "\
 plogger ~a
 
-Copyright (C) 2010 Romel Raúl Sandoval-Palomo.
+Copyright (C) 2010 Romel Raul Sandoval Palomo.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 " 
 					   *version*)))
 		  (if help-wanted
 			  (display "\
-Usage: plogger COMMAND [OPTION]... [ARGUMENT]
+Usage: plogger COMMAND [OPTION]... [ARGUMENTS]
 
 Plogger is a time tracking program.
 
 Commands:
 
- start            Starts tracking an activity, options: -T -f -P
- end              Stops tracking current activity, options: -p -c
- interrupt        Holds activity tracking, no options
- continue         Continues activity tracking, options: -c
- add-project      Adds a project to track, options: -P
- show-projects    Show all projects, no options
- add-task-type    Adds an task type, options: -t
- show-task-types  Show all task types, no options
- add-task         Adds an task to track, options: -T -t -P
- show-tasks       Show un-resolved tasks, options: [-P]
- add-phase        Adds a phase, options: -f
- show-phases      Show all phases, no options
- query            Execute an SQL query, no options
+ start              Starts tracking an activity, options: -T -f -P
+ end                Stops tracking current activity, options: -p -c
+ interrupt          Holds activity tracking, no options
+ continue           Continues activity tracking, options: -c
+ add-project NAME   Adds a new project to track, no-options
+ projects           Show all projects, no options
+ add-unit           Adds a new unit, no options, args: PLURAL SINGULAR
+ units              Shows all units, no options
+ add-task           Adds a new task to track, options: -P -t, arg: DESC
+ tasks              Show un-resolved tasks, options: [-P]
+ add-phase          Adds a phase, options: -f
+ show-phases        Show all phases, no options
+ query              Execute an SQL query, no options
 
 Options:
 
  -P, --project=NAME     Some project with tasks
- -T, --task             Task you want to track
- -t, --task-type        Task type
- -p, --progress         The progress made on task
- -f, --phase            Common tasks' phases
- -c, --comment          Some comment for an activity or an interruption
+ -T, --task=ID          Task you want to track
+ -t, --tags=TAGS        Comma separated list of tags
+ -p, --progress=PERCENT The progress percentage made on task -1 means cancelled
+ -c, --comment          Some comment for an activity
  -h, --help             This help message
  -v, --version          A brief version message
  -d, --debug            Hack the world

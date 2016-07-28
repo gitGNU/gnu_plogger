@@ -1,5 +1,5 @@
 ;; Plogger - Time tracking software
-;; Copyright (C) 2010 Romel Raúl Sandoval-Palomo
+;; Copyright (C) 2010 Romel Raul Sandoval Palomo
 ;;
 ;; This program is free software; you can redistribute it and/or    
 ;; modify it under the terms of the GNU General Public License as   
@@ -27,16 +27,16 @@
   (dbi-query db "select * from phases"))
 
 (define new-phase 
-  (lambda (db title)
-    (validate-string-length title 32)
+  (lambda (db name)
+    (validate-string-length name 32)
     (dbi-query db 
-	       (format #f "insert into phases (title) values ('~a')" title))))
+	       (format #f "insert into phases (name) values ('~a')" name))))
 
 (define get-phase-id
-  (lambda (db title)
-    (validate-string-length title 32)
+  (lambda (db name)
+    (validate-string-length name 32)
     (dbi-query db 
-	       (format #f "select id from phases where title = '~a'" title))
+	       (format #f "select id from phases where name = '~a'" name))
     (let ((phase (dbi-get_row db)))
       (if phase
 	  (cdr (assoc "id" phase))

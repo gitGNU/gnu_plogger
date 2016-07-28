@@ -7,7 +7,8 @@ ploggersqldir = ${prefix}/share/plogger/sql
 
 ploggerscm_DATA = \
 	config.scm \
-	rdb.scm \
+	db.scm \
+	models.scm \
 	text.scm \
 	phases.scm \
 	projects.scm \

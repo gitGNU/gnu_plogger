@@ -1,5 +1,5 @@
 ;; Plogger - Time tracking software
-;; Copyright (C) 2010 Romel Raúl Sandoval-Palomo
+;; Copyright (C) 2010 Romel Raul Sandoval Palomo
 ;;
 ;; This program is free software; you can redistribute it and/or    
 ;; modify it under the terms of the GNU General Public License as   

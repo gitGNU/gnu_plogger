@@ -1,5 +1,5 @@
 -- Plogger - Time tracking software
--- Copyright (C) 2010 Romel Raúl Sandoval-Palomo
+-- Copyright (C) 2010 Romel Raul Sandoval Palomo
 --
 -- This program is free software; you can redistribute it and/or    
 -- modify it under the terms of the GNU General Public License as   
@@ -24,27 +24,62 @@
 
 create table projects (
        id integer primary key, 
-       title varchar(32) unique
-);
-
-create table phases (
-       id integer primary key, 
-       title varchar(32) unique
-);
-
-create table task_types (
-       id integer primary key,
-       title varchar(32) unique
+       project varchar(32) unique
 );
 
 create table tasks (
        id integer primary key,
-       title varchar(32),
+       description varchar(200),
        progress decimal(3,2) default 0.0,
-       type_id integer,
        project_id integer,
-       foreign key(type_id) references task_types(id),
        foreign key(project_id) references projects(id)
+);
+
+create table tag_groups (
+       id integer primary key, 
+       tag_group varchar(32) unique
+);
+
+create table tags (
+       id integer primary key,
+       tag varchar(32) unique,
+       tag_group_id integer,
+       foreign key(tag_group_id) references tag_groups(id)
+);
+
+create table task_has_tags (
+       task_id integer,
+       tag_id integer,
+       foreign key(task_id) references tasks(id),
+       foreign key(tag_id) references tags(id)
+);
+
+create table remote_systems (
+       id integer primary key,
+       "name" varchar(32),
+       url varchar(255)
+);
+
+create table remote_task_ids (
+       id varchar(32) primary key,
+       task_id integer,
+       remote_system_id integer not null,
+       foreign key(task_id) references tasks(id),
+       foreign key(remote_system_id) references remote_systems(id)_
+);
+
+create table units (
+       id integer primary key,
+       singular varchar(32) unique,
+       plural varchar(36) unique
+);
+
+create table task_has_units (
+       task_id integer not null,
+       unit_id integer not null,
+       quantity integer,
+       foreign key (task_id) references tasks(id),
+       foreign key (unit_id) references units(id),
 );
 
 create table activities (
@@ -53,16 +88,5 @@ create table activities (
        end_time timestamp,
        comment varchar(1024),
        task_id integer,
-       phase_id integer,
        foreign key(task_id) references tasks(id),
-       foreign key(phase_id) references phases(id)
-);
-
-create table interruptions(
-       id integer primary key,
-       start_time timestamp default current_timestamp,
-       end_time timestamp,
-       comment varchar(1024),
-       activity_id integer,
-       foreign key(activity_id) references activities(id)
 );

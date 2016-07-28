@@ -1,5 +1,5 @@
 ;; Plogger - Time tracking software
-;; Copyright (C) 2010 Romel Raúl Sandoval-Palomo
+;; Copyright (C) 2010 Romel Raul Sandoval Palomo
 ;;
 ;; This program is free software; you can redistribute it and/or    
 ;; modify it under the terms of the GNU General Public License as   
@@ -20,18 +20,19 @@
 
 (define-module (plogger commands)
   :use-module (plogger projects)
-  :use-module (plogger task-types)
   :use-module (plogger tasks)
   :use-module (plogger phases)
   :use-module (plogger activities)
   :use-module (plogger interruptions)
   :use-module (plogger config)
-  :use-module (plogger rdb)
+  :use-module (plogger db)
+  :use-module (plogger models)
+  :use-module (plogger validations)
   :use-module (plogger text)
   :use-module (ice-9 getopt-long)
   :use-module (dbi dbi)
-  :export (add-project show-projects add-task-type show-task-types 
-           add-task show-tasks add-phase show-phases 
+  :export (add-project projects add-unit units 
+           add-task tasks add-phase show-phases 
 		   start end interrupt continue query))
 
 (define (query options arg)
@@ -45,7 +46,7 @@
 
 (define (add-project options arg)
   (let ((db (db-open)))
-    (new-project db (option-ref options 'project #f))
+    (new-project db arg)
     (db-close db)))
 
 (define (add-phase options arg)
@@ -59,35 +60,39 @@
 	(alists->table (db-list-result db))
 	(db-close db)))
 
-(define (add-task-type options arg)
-  (let ((db (db-open)))
-    (new-task-type db (option-ref options 'task-type #f))
+(define (add-task options arg)
+  (let* ((project (option-ref options 'project #f))
+	 (tags (option-ref options 'tags #f))
+	 (task (make-task arg project tags))
+	 (db (db-open)))
+    (validate-task task)
+    (save-task db task)
     (db-close db)))
 
-(define (show-task-types options arg)
+(define (add-unit arg)
+  (let ((db (db-open))
+	(unit (make-unit (car arg) (cadr arg))))
+    (validate-unit unit)
+    (save-unit db unit)
+    (db-close db)))
+
+(define (units)
   (let ((db (db-open)))
-	(select-task-types db)
+	(all-units db)
 	(alists->table (db-list-result db))
 	(db-close db)))
 
-(define (add-task options arg)
-  (let ((db (db-open)))
-    (new-task db 
-	       (option-ref options 'task-type #f)
-	       (option-ref options 'task #f)
-	       (option-ref options 'project #f))
-    (db-close db)))
 
-(define (show-tasks options arg)
+(define (tasks options arg)
   (let ((db (db-open))
-		(project-title (option-ref options 'project #f)))
-	(if project-title
-		(select-tasks db project-title)
+		(project-name (option-ref options 'project #f)))
+	(if project-name
+		(select-tasks db project-name)
 		(select-tasks db))
 	(alists->table (db-list-result db))
 	(db-close db)))
 
-(define (show-projects options arg)
+(define (projects options arg)
   (let ((db (db-open)))
 	(select-projects db)
 	(alists->table (db-list-result db))

@@ -1,5 +1,5 @@
 ;; Plogger - Time tracking software
-;; Copyright (C) 2010 Romel Raúl Sandoval-Palomo
+;; Copyright (C) 2010 Romel Raul Sandoval Palomo
 ;;
 ;; This program is free software; you can redistribute it and/or    
 ;; modify it under the terms of the GNU General Public License as   
@@ -18,15 +18,22 @@
 ;; 59 Temple Place - Suite 330        Fax:    +1-617-542-2652
 ;; Boston, MA  02111-1307,  USA       gnu@gnu.org
 
-(define-module (plogger rdb)
-  :use-module (dbi dbi)
-  :export (db-list-result))
+(define-module (plogger models)
+  :use-module (srfi srfi-9)
+  :export (<unit> make-unit unit? unit-plural unit-singular))
 
-(define (db-list-result-r db list-result)
-  (let ((result (dbi-get_row db)))
-    (if result
-		(db-list-result-r db (append list-result (list result)))
-	list-result)))
 
-(define (db-list-result db)
-  (db-list-result-r db '()))
+(define-record-type <unit>
+  (make-unit plural singular)
+  unit?
+  (plural unit-plural)
+  (singular unit-singular))
+
+(define-record-type <task>
+  (make-task description project tags)
+  task?
+  (description task-description)
+  (prject task-project)
+  (tags task-tags)
+  ;;(units task-units set-task-units!)
+  )

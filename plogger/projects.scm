@@ -1,5 +1,5 @@
 ;; Plogger - Time tracking software
-;; Copyright (C) 2010 Romel Raúl Sandoval-Palomo
+;; Copyright (C) 2010 Romel Raul Sandoval Palomo
 ;;
 ;; This program is free software; you can redistribute it and/or    
 ;; modify it under the terms of the GNU General Public License as   
@@ -27,14 +27,9 @@
   (dbi-query db "select * from projects"))
 
 (define new-project 
-  (lambda (db title)
-    (validate-string-length title 32)
+  (lambda (db name)
+    (validate-string-length name 32)
     (dbi-query db 
-	       (format #f "insert into projects (title) values ('~a')" title))))
+	       (format #f "insert into projects (project) values ('~a')"
+		       name))))
 
-(define get-project-id
-  (lambda (db title)
-    (validate-string-length title 32)
-    (dbi-query db 
-	       (format #f "select id from projects where title = '~a'" title))
-    (cdr (assoc "id" (dbi-get_row db)))))
