@@ -65,7 +65,7 @@ create table remote_task_ids (
        task_id integer,
        remote_system_id integer not null,
        foreign key(task_id) references tasks(id),
-       foreign key(remote_system_id) references remote_systems(id)_
+       foreign key(remote_system_id) references remote_systems(id)
 );
 
 create table units (
@@ -79,7 +79,7 @@ create table task_has_units (
        unit_id integer not null,
        quantity integer,
        foreign key (task_id) references tasks(id),
-       foreign key (unit_id) references units(id),
+       foreign key (unit_id) references units(id)
 );
 
 create table activities (
@@ -88,5 +88,5 @@ create table activities (
        end_time timestamp,
        comment varchar(1024),
        task_id integer,
-       foreign key(task_id) references tasks(id),
+       foreign key(task_id) references tasks(id)
 );

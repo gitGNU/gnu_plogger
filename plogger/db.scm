@@ -64,7 +64,7 @@ insert into task-has-tag (task_id, tag_id) values (~d, ~d)"
        db 
        (format #f "\
 insert into tasks (description, project_id) values ('~a', ~d)" 
-	       name type-id project-id))
+	       name project-id))
       (save-task-tags db tag-ids)))
 
 

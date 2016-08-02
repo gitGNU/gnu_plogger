@@ -33,7 +33,7 @@
   (make-task description project tags)
   task?
   (description task-description)
-  (prject task-project)
+  (project task-project)
   (tags task-tags)
   ;;(units task-units set-task-units!)
   )

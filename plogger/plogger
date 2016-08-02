@@ -28,21 +28,21 @@ exec guile --debug -e main -s $0 "$@"
 
 (define *debug-mode* #f)
 
-(define (execute-command c options arg)
+(define (execute-command c options arguments)
   (cond
-   ((string= c "add-project") (add-project options arg))
-   ((string= c "projects") (projects options arg))
-   ((string= c "add-unit") (add-unit arg))
+   ((string= c "add-project") (add-project options (car arguments)))
+   ((string= c "projects") (projects options))
+   ((string= c "add-unit") (add-unit options arguments))
    ((string= c "units") (units))
-   ((string= c "add-task") (add-task options arg))
-   ((string= c "tasks") (tasks options arg))
-   ((string= c "add-phase") (add-phase options arg))
-   ((string= c "show-phases") (show-phases options arg))
-   ((string= c "start") (start options arg))
-   ((string= c "end") (end options arg))
-   ((string= c "interrupt") (interrupt options arg))
-   ((string= c "continue") (continue options arg))
-   ((string= c "query") (query options arg))
+   ((string= c "add-task") (add-task options arguments))
+   ((string= c "tasks") (tasks options arguments))
+   ((string= c "add-phase") (add-phase options arguments))
+   ((string= c "show-phases") (show-phases options arguments))
+   ((string= c "start") (start options arguments))
+   ((string= c "end") (end options arguments))
+   ((string= c "interrupt") (interrupt options arguments))
+   ((string= c "continue") (continue options arguments))
+   ((string= c "query") (query options arguments))
 ))
 
 (define (main args)
@@ -58,7 +58,7 @@ exec guile --debug -e main -s $0 "$@"
 			(help (single-char #\h) (value #f))))
 		 (options (getopt-long args option-spec))
 		 (command (car (cdr args)))
-		 (argument (cdr (cdr args)))
+		 (arguments (cdr (cdr args)))
 		 (help-wanted (option-ref options 'help #f))
 		 (version-wanted (option-ref options 'version #f))
 		 (debug-wanted (option-ref options 'debug #f)))
@@ -112,5 +112,5 @@ Options:
 Report bugs to <romel at openmailbox.org>.
 ")))
 	(begin
-	  (execute-command command options argument)))))
+	  (execute-command command options arguments)))))
 

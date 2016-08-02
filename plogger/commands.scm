@@ -92,7 +92,7 @@
 	(alists->table (db-list-result db))
 	(db-close db)))
 
-(define (projects options arg)
+(define (projects options)
   (let ((db (db-open)))
 	(select-projects db)
 	(alists->table (db-list-result db))
