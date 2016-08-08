@@ -62,6 +62,18 @@ exec guile --debug -e main -s $0 "$@"
 		 (help-wanted (option-ref options 'help #f))
 		 (version-wanted (option-ref options 'version #f))
 		 (debug-wanted (option-ref options 'debug #f)))
+    (if first-run?
+	(begin
+	  (mkdir *rc-dir*)
+	  (let ((init-sql-file (open-input-file *init-sql*))
+		(db-obj (db-open)))
+	    (begin 
+	      (init-db db-obj init-sql-file)
+	      (close-input-port init-sql-file)
+	      (db-close db-obj)
+	      (init-rc-file)))))
+
+
     (if debug-wanted
 	(set! *debug-mode* #t))
     (if (or version-wanted help-wanted)
