@@ -23,8 +23,8 @@
   :use-module (ice-9 rdelim)
   :use-module (dbi dbi)
   :export (*app-name* *version* *init-sql* *rc-dir* *rc-file* *db-path*
-		      first-run? db-open db-close rc 
-		      init-db init-rc-file))
+		      first-run? rc 
+		      init-rc-file))
 
 (define *version* "@VERSION@")
 
@@ -42,15 +42,6 @@
 (define *db-path*
   (string-append *rc-dir* "/" *app-name* ".db"))
 
-(define init-db 
-  (lambda (db-obj init-sql-file)
-    (let ( (query (read-delimited ";" init-sql-file)) )
-      (if (not (eof-object? query))
-	  (begin
-	    (display query)(newline)
-	    (dbi-query db-obj query)
-	    (display db-obj)(newline)
-	    (init-db db-obj init-sql-file))))))
 
 (define init-rc-file
   (lambda ()
@@ -58,13 +49,6 @@
       (write (list (cons "current-activity" #f)) file)(newline file)
       (close-port file)
       )))
-
-(define db-open 
-  (lambda () (dbi-open "sqlite3" *db-path*)))
-
-(define db-close
-  (lambda (db)
-    (dbi-close db)))
 
 (define first-run?
   (not (access? *rc-dir* (logior R_OK W_OK))))

@@ -24,6 +24,7 @@ exec guile --debug -e main -s $0 "$@"
 
 (use-modules (plogger config)
 	     (plogger commands)
+	     (plogger db)
              (ice-9 getopt-long))
 
 (define *debug-mode* #f)
@@ -65,11 +66,9 @@ exec guile --debug -e main -s $0 "$@"
     (if first-run?
 	(begin
 	  (mkdir *rc-dir*)
-	  (let ((init-sql-file (open-input-file *init-sql*))
-		(db-obj (db-open)))
+	  (let ((db-obj (db-open)))
 	    (begin 
-	      (init-db db-obj init-sql-file)
-	      (close-input-port init-sql-file)
+	      (init-db db-obj)
 	      (db-close db-obj)
 	      (init-rc-file)))))
 

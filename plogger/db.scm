@@ -22,8 +22,86 @@
   :use-module (dbi dbi)
   :use-module (plogger models)
   :use-module (plogger text)
+  :use-module (plogger config)
   :export (db-list-result
-	   save-unit get-unit-id all-units))
+	   save-unit get-unit-id all-units
+	   init-db db-open db-close))
+
+(define init-db 
+  (lambda (db-obj)
+    (let ( (tables '("\
+create table projects (
+       id integer primary key, 
+       project varchar(32) unique
+);"
+
+"create table tasks (
+       id integer primary key,
+       description varchar(200),
+       progress decimal(3,2) default 0.0,
+       project_id integer,
+       foreign key(project_id) references projects(id)
+);"
+
+"create table tag_groups (
+       id integer primary key, 
+       tag_group varchar(32) unique
+);"
+
+"create table tags (
+       id integer primary key,
+       tag varchar(32) unique,
+       tag_group_id integer,
+       foreign key(tag_group_id) references tag_groups(id)
+);"
+
+"create table task_has_tags (
+       task_id integer,
+       tag_id integer,
+       foreign key(task_id) references tasks(id),
+       foreign key(tag_id) references tags(id)
+);"
+
+"create table remote_systems (
+       id integer primary key,
+       \"name\" varchar(32),
+       url varchar(255)
+);"
+
+"create table remote_task_ids (
+       id varchar(32) primary key,
+       task_id integer,
+       remote_system_id integer not null,
+       foreign key(task_id) references tasks(id),
+       foreign key(remote_system_id) references remote_systems(id)
+);"
+
+"create table units (
+       id integer primary key,
+       singular varchar(32) unique,
+       plural varchar(36) unique
+);"
+
+"create table task_has_units (
+       task_id integer not null,
+       unit_id integer not null,
+       quantity integer,
+       foreign key (task_id) references tasks(id),
+       foreign key (unit_id) references units(id)
+);"
+
+"create table activities (
+       id integer primary key,
+       start_time timestamp default current_timestamp,
+       end_time timestamp,
+       comment varchar(1024),
+       task_id integer,
+       foreign key(task_id) references tasks(id)
+);")))
+      (for-each (lambda (query)
+		  (dbi-query db-obj query)
+		  (if (not (eq? (car (dbi-get_status db-obj)) 0))
+		      (throw 'db-initialization-error))) tables))))
 
 (define (all-units db)
   (dbi-query db "select * from units"))
@@ -76,4 +154,27 @@ insert into tasks (description, project_id) values ('~a', ~d)"
 
 (define (db-list-result db)
   (db-list-result-r db '()))
+
+
+
+;(define init-db 
+;  (lambda (db-obj init-sql-file)
+;    (let ( (query (read-delimited ";" init-sql-file)) )
+;      (if (not (eof-object? query))
+;	  (begin
+;	    ;; TODO add logic to handle database errors.
+;	    ;(display query)(newline)
+;	    (dbi-query db-obj query)
+;	    ;(display db-obj)(newline)
+;	    (init-db db-obj init-sql-file))))))
+
+;(define (valid-query? query)
+;  (
+
+(define db-open 
+  (lambda () (dbi-open "sqlite3" *db-path*)))
+
+(define db-close
+  (lambda (db)
+    (dbi-close db)))
 
