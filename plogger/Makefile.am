@@ -20,12 +20,9 @@ ploggerscm_DATA = \
 	interruptions.scm \
 	commands.scm
 
-ploggersql_DATA = \
-	init.sql
-
 EXTRA_DIST = \
-	$(ploggerscm_DATA) \
-	$(ploggersql_DATA)
+	$(ploggerscm_DATA)
 
 uninstall-local:
-	-rm -r $(ploggerscm_DATA) $(ploggersql_DATA)
+	-rm -r $(ploggerscm_DATA)
+
