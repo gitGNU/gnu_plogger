@@ -39,27 +39,69 @@
 		(extract-rows (cdr alists) rows))
 	  rows))
 
-(define (display-row row)
-  (if (not (null? row))
-	  (begin
-		(display (car row))(display "\t")
-		(display-row (cdr row)))))
+(define (extract-elements-lengths list)
+  ;(display "List: ")
+  ;(display list)(newline)
+  (map string-length list))
+   
+(define (extract-lines-elements-lengths lines)
+  ;(display "Lines: ")
+  ;(display lines)(newline)
+  (map extract-elements-lengths lines))
+  
+(define (extract-elements-max-lengths lengths lines-elements-lengths)
+  (if (not (null? lines-elements-lengths))
+      (extract-elements-max-lengths
+       (map max lengths (car lines-elements-lengths))
+       (cdr lines-elements-lengths))
+      lengths))
 
-(define (display-lines lines)
+(define (extract-table-format-r format-string lengths)
+  (if (not (null? lengths))
+      (extract-table-format-r
+       (string-append format-string
+		      "~" (format #f "~a" (car lengths)) "a ") ;;",,,' @a "
+       (cdr lengths))
+      format-string))
+
+(define (extract-table-format lines)
+  (let* ((lines-elements-lengths (extract-lines-elements-lengths lines))
+	 (max-lengths (extract-elements-max-lengths
+		       (car lines-elements-lengths)
+		       (cdr lines-elements-lengths))))
+    ;(display "Lines: ")(display lines)(newline)
+    ;(display "max-lenghts")(display max-lengths)(newline)
+    (extract-table-format-r "" max-lengths)))
+			    
+			    
+(define (display-row format-string row)
+  (if (not (null? row))
+      (apply format (append (list #t format-string) row))))
+
+(define (display-lines format-string lines)
   (if (not (null? lines))
-	  (begin
-		(display-row (car lines))(newline)
-		(display-lines (cdr lines)))))
+      (begin
+	(display-row format-string (car lines))(newline)
+	(display-lines format-string (cdr lines)))))
+
+(define (lines->string-lines lines)
+  (map (lambda (list)
+	 (map (lambda (element)
+		(format #f "~a" element)) list)) lines))
 
 (define (alists->table alists)
   (let* ((headers (extract-headers (car alists) '()))
-		 (rows (extract-rows alists '()))
-		 (lines (append (list headers) rows)))
-	(display-lines lines)))
+	 (rows (extract-rows alists '()))
+	 (lines (append (list headers) rows))
+	 (string-lines (lines->string-lines lines))
+	 (format-string (extract-table-format string-lines)))
+    ;(display "Lines: ")(display lines)(newline)
+    ;(display "format-string: ")(display format-string)(newline)
+    (display-lines format-string string-lines)))
 
-(define (alists->list alists)
-  (let ((rows (extract-rows alists '())))
-    (display-lines rows)))
+;(define (alists->list alists)
+;  (let ((rows (extract-rows alists '())))
+;    (display-lines rows)))
 
 (define (list->values list)
   (let* ((values-with-extra-comma (concatenate
