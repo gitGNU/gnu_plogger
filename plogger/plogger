@@ -29,66 +29,19 @@ exec guile --debug -e main -s $0 "$@"
 
 (define *debug-mode* #f)
 
-(define (execute-command c options arguments)
-  (cond
-   ((string= c "add-project") (add-project options (car arguments)))
-   ((string= c "projects") (projects options))
-   ((string= c "add-unit") (add-unit options arguments))
-   ((string= c "units") (units))
-   ((string= c "add-task") (add-task options arguments))
-   ((string= c "tasks") (tasks options arguments))
-   ((string= c "add-phase") (add-phase options arguments))
-   ((string= c "show-phases") (show-phases options arguments))
-   ((string= c "start") (start options arguments))
-   ((string= c "end") (end options arguments))
-   ((string= c "interrupt") (interrupt options arguments))
-   ((string= c "continue") (continue options arguments))
-   ((string= c "query") (query options arguments))
-))
-
-(define (main args)
-  (let* ((option-spec '((task (single-char #\T) (value #t))
-			(phase (single-char #\f) (value #t))
-			(project (single-char #\P) (value #t))
-			(comment (single-char #\c) (value #t))
-			(progress (single-char #\p) (value #t))
-			(tags (single-char #\t) (value #t))
-			(query (single-char #\q) (value #t))
-			(debug (single-char #\d) (value #f))
-			(version (single-char #\v) (value #f))
-			(help (single-char #\h) (value #f))))
-		 (options (getopt-long args option-spec))
-		 (command (car (cdr args)))
-		 (arguments (cdr (cdr args)))
-		 (help-wanted (option-ref options 'help #f))
-		 (version-wanted (option-ref options 'version #f))
-		 (debug-wanted (option-ref options 'debug #f)))
-    (if first-run?
-	(begin
-	  (mkdir *rc-dir*)
-	  (let ((db-obj (db-open)))
-	    (begin 
-	      (init-db db-obj)
-	      (db-close db-obj)
-	      (init-rc-file)))))
-
-
-    (if debug-wanted
-	(set! *debug-mode* #t))
-    (if (or version-wanted help-wanted)
-		(begin
-		  (if version-wanted
-			  (display 
-			   (format #f "\
+(define (display-version)
+  (display 
+   (format #f "\
 plogger ~a
 
 Copyright (C) 2010 Romel Raul Sandoval Palomo.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 " 
-					   *version*)))
-		  (if help-wanted
-			  (display "\
+	   *version*)))
+
+(define (display-help)
+  (display "\
 Usage: plogger COMMAND [OPTION]... [ARGUMENTS]
 
 Plogger is a time tracking program.
@@ -121,7 +74,70 @@ Options:
  -d, --debug            Hack the world
 
 Report bugs to <romel at openmailbox.org>.
-")))
+"))
+
+(define (execute-command c options arguments)
+  (cond
+   ((string= c "add-project") (add-project options (car arguments)))
+   ((string= c "projects") (projects options))
+   ((string= c "add-unit") (add-unit options arguments))
+   ((string= c "units") (units))
+   ((string= c "add-task") (add-task options arguments))
+   ((string= c "tasks") (tasks options arguments))
+   ((string= c "add-phase") (add-phase options arguments))
+   ((string= c "show-phases") (show-phases options arguments))
+   ((string= c "start") (start options arguments))
+   ((string= c "end") (end options arguments))
+   ((string= c "interrupt") (interrupt options arguments))
+   ((string= c "continue") (continue options arguments))
+   ((string= c "query") (query options arguments))
+))
+
+(define (execute-options args)
+  (let* ((option-spec '((task (single-char #\T) (value #t))
+			(phase (single-char #\f) (value #t))
+			(project (single-char #\P) (value #t))
+			(comment (single-char #\c) (value #t))
+			(progress (single-char #\p) (value #t))
+			(tags (single-char #\t) (value #t))
+			(query (single-char #\q) (value #t))
+			(debug (single-char #\d) (value #f))
+			(version (single-char #\v) (value #f))
+			(help (single-char #\h) (value #f))))
+	 (options (getopt-long args option-spec))
+	 (command (car (cdr args)))
+	 (arguments (cdr (cdr args)))
+	 (help-wanted (option-ref options 'help #f))
+	 (version-wanted (option-ref options 'version #f))
+	 (debug-wanted (option-ref options 'debug #f)))
+    (if first-run?
+	(begin
+	  (mkdir *rc-dir*)
+	  (let ((db-obj (db-open)))
+	    (begin 
+	      (init-db db-obj)
+	      (db-close db-obj)
+	      (init-rc-file)))))
+    
+    
+    (if debug-wanted
+	(set! *debug-mode* #t))
+    (if (or version-wanted help-wanted)
+	(begin
+	  (if version-wanted (display-version))
+	  (if help-wanted (display-help)))
 	(begin
 	  (execute-command command options arguments)))))
+
+							 
+(define (main args)
+  ;;(display args)(newline)
+  (catch 'null-options
+	 (lambda ()
+	   (if (> (length args) 1)
+	       (execute-options args)
+	       (throw 'null-options)))
+	 (lambda (key)
+	   (display-help))))
+
 
