@@ -21,15 +21,16 @@
 (define-module (plogger projects)
   :use-module (plogger validations)
   :use-module (dbi dbi)
-  :export (new-project get-project-id select-projects))
+  :export (save-project get-project-id select-projects))
 
-(define (select-projects db)
-  (dbi-query db "select * from projects"))
-
-(define new-project 
+(define save-project 
   (lambda (db name)
     (validate-string-length name 32)
     (dbi-query db 
 	       (format #f "insert into projects (project) values ('~a')"
 		       name))))
+
+(define (select-projects db)
+  (dbi-query db "select * from projects"))
+
 

@@ -20,7 +20,10 @@
 
 (define-module (plogger models)
   :use-module (srfi srfi-9)
-  :export (<unit> make-unit unit? unit-plural unit-singular))
+  :export (<unit> 
+	   make-unit unit? unit-plural unit-singular
+	   <task>
+	   make-task task? task-description task-project task-tags))
 
 
 (define-record-type <unit>

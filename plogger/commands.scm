@@ -31,8 +31,8 @@
   :use-module (plogger text)
   :use-module (ice-9 getopt-long)
   :use-module (dbi dbi)
-  :export (add-project projects add-unit units 
-           add-task tasks add-phase show-phases 
+  :export (new-project projects new-unit units 
+           new-task tasks new-phase show-phases 
 		   start end interrupt continue query))
 
 (define (query options arg)
@@ -44,12 +44,12 @@
 	  (alists->table result)
 	  (begin (display status)(newline))))))
 
-(define (add-project options arg)
+(define (new-project arg)
   (let ((db (db-open)))
-    (new-project db arg)
+    (save-project db arg)
     (db-close db)))
 
-(define (add-phase options arg)
+(define (new-phase options arg)
   (let ((db (db-open)))
     (new-phase db (option-ref options 'phase #f))
     (db-close db)))
@@ -60,7 +60,7 @@
 	(alists->table (db-list-result db))
 	(db-close db)))
 
-(define (add-task options arg)
+(define (new-task options arg)
   (let* ((project (option-ref options 'project #f))
 	 (tags (option-ref options 'tags #f))
 	 (task (make-task arg project tags))
@@ -69,7 +69,7 @@
     (save-task db task)
     (db-close db)))
 
-(define (add-unit arg)
+(define (new-unit arg)
   (let ((db (db-open))
 	(unit (make-unit (car arg) (cadr arg))))
     (validate-unit unit)
@@ -94,9 +94,14 @@
 
 (define (projects options)
   (let ((db (db-open)))
-	(select-projects db)
-	(alists->table (db-list-result db))
-	(db-close db)))
+    (select-projects db)
+    (let ((alist (db-list-result db)))
+      (if (null? alist)
+	  (begin (display "\
+No projects created yet. Use plogger new-project command to create projects.")
+		 (newline))
+	  (alists->table alist))
+      (db-close db))))
 
 (define (start options arg)
   (let ((db (db-open)))

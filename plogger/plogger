@@ -52,14 +52,13 @@ Commands:
  end                Stops tracking current activity, options: -p -c
  interrupt          Holds activity tracking, no options
  continue           Continues activity tracking, options: -c
- add-project NAME   Adds a new project to track, no-options
+ new-project NAME   New project to track, no-options
  projects           Show all projects, no options
- add-unit           Adds a new unit, no options, args: PLURAL SINGULAR
+ new-unit           New unit for tasks, no options, args: PLURAL SINGULAR
  units              Shows all units, no options
- add-task           Adds a new task to track, options: -P -t, arg: DESC
+ new-task           New task to track, options: -P -t, arg: DESC
  tasks              Show un-resolved tasks, options: [-P]
- add-phase          Adds a phase, options: -f
- show-phases        Show all phases, no options
+ show-tags          Show all tags, no options
  query              Execute an SQL query, no options
 
 Options:
@@ -78,20 +77,20 @@ Report bugs to <romel at openmailbox.org>.
 
 (define (execute-command c options arguments)
   (cond
-   ((string= c "add-project") (add-project options (car arguments)))
+   ((string= c "new-project") (new-project (car arguments)))
    ((string= c "projects") (projects options))
-   ((string= c "add-unit") (add-unit options arguments))
+   ((string= c "new-unit") (new-unit options arguments))
    ((string= c "units") (units))
-   ((string= c "add-task") (add-task options arguments))
+   ((string= c "new-task") (new-task options arguments))
    ((string= c "tasks") (tasks options arguments))
-   ((string= c "add-phase") (add-phase options arguments))
+   ((string= c "new-phase") (new-phase options arguments))
    ((string= c "show-phases") (show-phases options arguments))
    ((string= c "start") (start options arguments))
    ((string= c "end") (end options arguments))
    ((string= c "interrupt") (interrupt options arguments))
    ((string= c "continue") (continue options arguments))
    ((string= c "query") (query options arguments))
-))
+   (else (display "Invalid Command")(newline)(display-help))))
 
 (define (execute-options args)
   (let* ((option-spec '((task (single-char #\T) (value #t))
@@ -138,6 +137,6 @@ Report bugs to <romel at openmailbox.org>.
 	       (execute-options args)
 	       (throw 'null-options)))
 	 (lambda (key)
-	   (display-help))))
+	   (display "Please execute a valid command")(newline)(display-help))))
 
 

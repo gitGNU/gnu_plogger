@@ -103,6 +103,7 @@ create table projects (
 		  (if (not (eq? (car (dbi-get_status db-obj)) 0))
 		      (throw 'db-initialization-error))) tables))))
 
+
 (define (all-units db)
   (dbi-query db "select * from units"))
 
