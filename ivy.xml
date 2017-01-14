@@ -1,0 +1,8 @@
+<ivy-module version="2.0">
+    <info organisation="com.sandosoft" module="plogger"/>
+    <dependencies>
+        <dependency org="kawa" 
+		    name="kawa" 
+		    rev="2.2"/>
+    </dependencies>
+</ivy-module>
