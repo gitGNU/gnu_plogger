@@ -41,13 +41,14 @@
 	   destdir="${build.dir}" 
 	   classpathref="lib.path.id"/>
     <property name="msg" value="hello ivy !"/>
+    <java classname="kawa.repl" classpathref="run.path.id">
+      <arg value="-s"/>
+      <arg value="--output-format readable-scheme"/>
+    </java>
+    <!--
     <java classpathref="run.path.id" classname="kawa.repl">
       <arg value="-e"/>
       <arg value="(import (plogger cmd))(hello-plogger)"/>
-    </java>
-    <!--
-    <java taskname="kawa" classname="kawa.repl" classpath="${run.path.id}">
-      <arg value="-s"/>
     </java>
     -->
 
