@@ -1,59 +1,154 @@
-<project name="plogger" default="run" xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="plogger" default="shell" xmlns:ivy="antlib:org.apache.ivy.ant">
   <!-- some variables used -->
   <property name="lib.dir" value="lib" />
+  <!-- not required 
+  <property name="main.lib.dir" value="${lib.dir}/main" />
+  <property name="test.lib.dir" value="${lib.dir}/test" />
+  -->
   <property name="build.dir" value="build" />
+  <property name="report.dir" value="${build.dir}/report" />
+  <property name="main.build.dir" value="${build.dir}/main" />
+  <property name="test.build.dir" value="${build.dir}/test" />
   <property name="src.dir" value="src" />
+  <property name="main.src.dir" value="${src.dir}/main" />
+  <property name="test.src.dir" value="${src.dir}/test" />
   <property name="build.tools" value="/home/romel/src/kawa-2.2/tools/" />
   
-  <!-- paths used for compilation and run  -->
-  <path id="lib.path.id">
-    <fileset dir="${lib.dir}" />
+  <!-- paths used for compilation, test and run  -->
+  <!--
+  <path id="main.lib.path">
+    <fileset dir="${main.lib.dir}" />
   </path>
-  <path id="run.path.id">
-    <path refid="lib.path.id" />
-    <path location="${build.dir}" />
+  <path id="test.lib.path">
+    <fileset dir="${test.lib.dir}" />
   </path>
+  -->
+  <path id="main.path">
+    <path refid="main.lib.path" />
+    <path location="${main.build.dir}" />
+  </path>
+  <path id="test.build.path">
+    <path refid="test.lib.path" />
+    <path location="${main.build.dir}" />
+  </path>
+  <path id="test.run.path">
+    <path refid="test.build.path" />
+    <path location="${test.build.dir}" />
+  </path>
+
+  <taskdef name="kawac" 
+	   classname="gnu.kawa.ant.Kawac" 
+	   classpath="${build.tools}"/>
+  
   
   <!-- ================================= 
        target: resolve              
        ================================= -->
   <target name="resolve" description="--> retreive dependencies with ivy">
     <ivy:retrieve/>
+    <ivy:cachepath pathid="main.lib.path" conf="main"/>
+    <ivy:cachepath pathid="test.lib.path" conf="test"/>
   </target>
-  
+
+  <!-- ================================= 
+       target: prepare-build
+       ================================= -->  
+  <target name="prepare-build" depends="resolve">
+    <!-- not required 
+    <mkdir dir="${build.dir}" />
+    -->
+    <mkdir dir="${report.dir}" />
+    <mkdir dir="${main.build.dir}" />
+    <mkdir dir="${test.build.dir}" />
+  </target>  
+
+
   <!-- ================================= 
        target: report              
        ================================= -->
-  <target name="report" depends="resolve" description="--> generates a report of dependencies">
+  <target name="report" depends="prepare-build" description="--> generates a report of dependencies">
     <ivy:report todir="${build.dir}"/>
   </target>
 
   <!-- ================================= 
-       target: run
-       ================================= -->
-  <taskdef name="kawac" 
-	   classname="gnu.kawa.ant.Kawac" 
-	   classpath="${build.tools}"/>
-  <target name="run" depends="resolve" description="--> compile and run the project">
-    <mkdir dir="${build.dir}" />
-    <kawac srcdir="${src.dir}" 
+       target: compile-main
+       ================================= -->  
+  <target name="compile-main" depends="prepare-build">
+    <kawac srcdir="${main.src.dir}" 
 	   language="scheme" 
-	   destdir="${build.dir}" 
-	   classpathref="lib.path.id"/>
-    <property name="msg" value="hello ivy !"/>
-    <java classname="kawa.repl" classpathref="run.path.id">
+	   destdir="${main.build.dir}" 
+	   classpathref="main.lib.path"/>
+  </target>
+
+  <!-- ================================= 
+       target: shell
+       ================================= -->  
+  <target name="shell" depends="compile-main" description="--> run the shell">
+    <java classname="kawa.repl" classpathref="main.path">
       <arg value="-s"/>
       <arg value="--output-format readable-scheme"/>
     </java>
     <!--
-    <java classpathref="run.path.id" classname="kawa.repl">
+    <java classpathref="main.path" classname="kawa.repl">
       <arg value="-e"/>
       <arg value="(import (plogger cmd))(hello-plogger)"/>
     </java>
     -->
-
   </target>
 
+  <!-- ================================= 
+       target: compile-test
+       ================================= -->  
+  <target name="compile-test" depends="compile-main">
+    <kawac srcdir="${test.src.dir}" 
+	   language="scheme" 
+	   destdir="${test.build.dir}" 
+	   classpathref="test.build.path"/>
+  </target>
+
+  <!-- ================================= 
+       target: test              
+       ================================= -->
+  <target name="test" depends="compile-test" description="Run unit tests">
+    <junit printsummary="yes" haltonfailure="yes">
+      <classpath>
+        <path refid="test.run.path"/>
+      </classpath>
+
+      <test name="project-test"
+	    haltonfailure="no" todir="${report.dir}">
+	<formatter type="plain" />
+	<formatter type="xml" />
+      </test>
+
+      <!-- not working
+
+      <batchtest fork="yes">
+        <fileset dir="${test.src.dir}">
+          <include name="**/*test*.class"/>
+        </fileset>
+      </batchtest>
+      -->
+    </junit>
+  </target>
+
+  <!-- ================================= 
+       target: test-shell
+       ================================= -->  
+  <target name="test-shell" depends="compile-test" description="--> run the test shell">
+    <java classname="kawa.repl" classpathref="test.run.path">
+      <arg value="-s"/>
+      <arg value="--output-format readable-scheme"/>
+    </java>
+    <!--
+    <java classpathref="main.path" classname="kawa.repl">
+      <arg value="-e"/>
+      <arg value="(import (plogger cmd))(hello-plogger)"/>
+    </java>
+    -->
+  </target>
+
+  
   <!-- ================================= 
        target: clean              
        ================================= -->
@@ -70,7 +165,7 @@
     <delete dir="${lib.dir}"/>
     <delete dir="${build.dir}"/>
   </target>
-  
+
   <!-- ================================= 
        target: clean-cache              
        ================================= -->

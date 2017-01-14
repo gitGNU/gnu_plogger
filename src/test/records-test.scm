@@ -1,0 +1,11 @@
+(import (class org.junit Test))
+(define-alias assertTrue org.junit.Assert:assertTrue)
+(define-alias assertFalse org.junit.Assert:assertFalse)
+(import (plogger records))
+
+(define-simple-class project-test ()
+  ((*init*) #!void)
+  ((test-project-record) ::void (@Test)
+   (define project (make-project "FOC" "FocalPoint"))
+   (assertTrue (project? project))
+   (display "DONE\n")))
