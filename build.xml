@@ -115,7 +115,7 @@
         <path refid="test.run.path"/>
       </classpath>
 
-      <test name="project-test"
+      <test name="all-record-types-test"
 	    haltonfailure="no" todir="${report.dir}">
 	<formatter type="plain" />
 	<formatter type="xml" />
