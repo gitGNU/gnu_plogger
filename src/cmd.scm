@@ -1,6 +1,7 @@
 (define-library (plogger cmd)
-  (import (scheme base) (scheme write))
+  (import (scheme base) (scheme write)
+	  (plogger config) (plogger records))
   (export hello-plogger)
   (begin
     (define (hello-plogger)
-      (display "Hello Plogger"))))
+      (display (string-append "Configuration Directory: " config-directory)))))
