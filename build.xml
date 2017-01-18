@@ -1,9 +1,12 @@
-<project name="plogger" default="shell" xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="plogger" default="shell" 
+	 xmlns:ivy="antlib:org.apache.ivy.ant"
+	 xmlns:fx="javafx:com.sun.javafx.tools.ant">
   <!-- some variables used -->
   <property name="lib.dir" value="lib" />
   <!-- not required 
   <property name="main.lib.dir" value="${lib.dir}/main" />
   <property name="test.lib.dir" value="${lib.dir}/test" />
+  <property name="java.lib" value="/usr/lib/jvm/java-8-oracle/lib" />
   -->
   <property name="build.dir" value="build" />
   <property name="report.dir" value="${build.dir}/report" />
@@ -23,8 +26,18 @@
     <fileset dir="${test.lib.dir}" />
   </path>
   -->
+  <path id="fxant">
+    <filelist>
+      <file name="${java.home}\..\lib\ant-javafx.jar"/>
+      <file name="${java.home}\lib\ext\jfxrt.jar"/>
+    </filelist>
+  </path>
   <path id="main.path">
+    <!-- disabled 
+    <path location="${java.lib}/"/>
+    -->
     <path refid="main.lib.path" />
+    <path refid="fxant" />
     <path location="${main.build.dir}" />
   </path>
   <path id="test.build.path">
@@ -62,6 +75,10 @@
     <mkdir dir="${test.build.dir}" />
   </target>  
 
+  <target name="print-classpath" depends="prepare-build">
+    <pathconvert property="classpathProp" refid="main.path"/>
+    <echo>Classpath is ${classpathProp}</echo>
+  </target>
 
   <!-- ================================= 
        target: report              
@@ -94,6 +111,23 @@
       <arg value="(import (plogger cmd))(hello-plogger)"/>
     </java>
     -->
+  </target>
+
+  <target name="run" depends="compile-main" description="--> run the app">
+    <java classname="Plogger" classpathref="main.path"/>
+  </target>
+
+  <target name="post-jfx-deploy-example">
+    <fx:deploy width="${javafx.run.width}" height="${javafx.run.height}"
+               nativeBundles="all"
+               outdir="${basedir}/${dist.dir}" outfile="${application.title}">
+      <fx:application name="${application.title}"
+                      mainClass="${javafx.main.class}"/>
+      <fx:resources>
+        <fx:fileset dir="${main.build.dir}" includes="*.jar"/>
+      </fx:resources>
+      <fx:info title="${application.title}" vendor="${application.vendor}"/>
+    </fx:deploy>
   </target>
 
   <!-- ================================= 
