@@ -14,6 +14,8 @@
   <property name="test.build.dir" value="${build.dir}/test" />
   <property name="src.dir" value="src" />
   <property name="main.src.dir" value="${src.dir}/main" />
+  <property name="main.kawa.src.dir" value="${main.src.dir}/kawa" />
+  <property name="main.resources.dir" value="${main.src.dir}/resources" />
   <property name="test.src.dir" value="${src.dir}/test" />
   <property name="build.tools" value="/home/romel/src/kawa-2.2/tools/" />
   
@@ -91,12 +93,12 @@
        target: compile-main
        ================================= -->  
   <target name="compile-main" depends="prepare-build">
-    <kawac srcdir="${main.src.dir}" 
+    <kawac srcdir="${main.kawa.src.dir}" 
 	   language="scheme" 
 	   destdir="${main.build.dir}" 
 	   classpathref="main.lib.path"/>
     <copy todir="${main.build.dir}">
-      <fileset dir="${main.src.dir}">
+      <fileset dir="${main.resources.dir}">
 	<include name="**/*.fxml"/>
       </fileset>
     </copy>
