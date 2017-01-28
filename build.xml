@@ -95,6 +95,11 @@
 	   language="scheme" 
 	   destdir="${main.build.dir}" 
 	   classpathref="main.lib.path"/>
+    <copy todir="${main.build.dir}">
+      <fileset dir="${main.src.dir}">
+	<include name="**/*.fxml"/>
+      </fileset>
+    </copy>
   </target>
 
   <!-- ================================= 
@@ -114,7 +119,7 @@
   </target>
 
   <target name="run" depends="compile-main" description="--> run the app">
-    <java classname="Plogger" classpathref="main.path"/>
+    <java classname="PloggerApp" classpathref="main.path"/>
   </target>
 
   <target name="post-jfx-deploy-example">
