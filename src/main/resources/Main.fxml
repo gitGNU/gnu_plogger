@@ -6,9 +6,20 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="200" prefWidth="320" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainController">
+<AnchorPane id="AnchorPane" prefHeight="338.0" prefWidth="446.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="MainController">
     <children>
-        <Button layoutX="126" layoutY="90" text="Click Me!" onAction="#handleButtonAction" fx:id="button" />
-        <Label layoutX="126" layoutY="120" minHeight="16" minWidth="69" fx:id="label" />
+      <VBox prefHeight="338.0" prefWidth="446.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <ToolBar prefHeight="40.0" prefWidth="200.0">
+              <items>
+                <Button fx:id="button" mnemonicParsing="false" onAction="#handleButtonAction" text="New Item" />
+		<Label layoutX="126" layoutY="120" minHeight="16" minWidth="69" fx:id="label" />
+                <Separator orientation="VERTICAL" />
+                <TextField promptText="Search" />
+                <Button mnemonicParsing="false" text="Find" />
+              </items>
+            </ToolBar>
+         </children>
+      </VBox>
     </children>
 </AnchorPane>

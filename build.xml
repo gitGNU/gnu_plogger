@@ -15,6 +15,7 @@
   <property name="src.dir" value="src" />
   <property name="main.src.dir" value="${src.dir}/main" />
   <property name="main.kawa.src.dir" value="${main.src.dir}/kawa" />
+  <property name="main.java.src.dir" value="${main.src.dir}/java" />
   <property name="main.resources.dir" value="${main.src.dir}/resources" />
   <property name="test.src.dir" value="${src.dir}/test" />
   <property name="build.tools" value="/home/romel/src/kawa-2.2/tools/" />
@@ -97,6 +98,8 @@
 	   language="scheme" 
 	   destdir="${main.build.dir}" 
 	   classpathref="main.lib.path"/>
+    <javac srcdir="${main.java.src.dir}" 
+	   destdir="${main.build.dir}"/>
     <copy todir="${main.build.dir}">
       <fileset dir="${main.resources.dir}">
 	<include name="**/*.fxml"/>
@@ -121,7 +124,7 @@
   </target>
 
   <target name="run" depends="compile-main" description="--> run the app">
-    <java classname="PloggerApp" classpathref="main.path"/>
+    <java fork="true" classname="PloggerApp" classpathref="main.path"/>
   </target>
 
   <target name="post-jfx-deploy-example">
