@@ -5,10 +5,11 @@
     <conf name="test" extends="main" visibility="private"/>
   </configurations>
   <dependencies>
-    <dependency org="kawa" name="kawa" rev="2.2" conf="main->default"/>
-    <dependency org="kawa" name="jline" rev="3.0.2" conf="main->default"/>
-    <!-- Use Derby until probe insufficient 
-    <dependency org="org.xerial" name="sqlite-jdbc" rev="3.7.2" conf="main->default"/> -->
+    <dependency org="kawa" name="kawa" rev="2.4" conf="main->default"/>
+    <dependency org="kawa" name="jline" rev="3.2.0" conf="main->default"/>
+    <dependency org="org.xerial" name="sqlite-jdbc" rev="3.7.2"
+                conf="main->default"/>
+    
     <dependency org="junit" name="junit" rev="4.12" conf="test->default"/>
   </dependencies>
 </ivy-module>
