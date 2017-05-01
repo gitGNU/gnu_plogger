@@ -65,6 +65,6 @@ Vagrant.configure("2") do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
-    apt-get install -y xorg fluxbox virtualbox-guest-dkms virtualbox-guest-utils virtualbox-guest-x11 emacs build-essential openjdk-8-jdk openjfx ant ivy
+    apt-get install -y xorg fluxbox virtualbox-guest-dkms virtualbox-guest-utils virtualbox-guest-x11 emacs build-essential openjdk-8-jdk
   SHELL
 end

@@ -18,7 +18,7 @@
   <property name="main.java.src.dir" value="${main.src.dir}/java" />
   <property name="main.resources.dir" value="${main.src.dir}/resources" />
   <property name="test.src.dir" value="${src.dir}/test" />
-  <property name="build.tools" value="/home/romel/src/kawa-2.2/tools/" />
+  <property name="build.tools" value="/usr/local/src/kawa/tools/" />
   
   <!-- paths used for compilation, test and run  -->
   <!--
