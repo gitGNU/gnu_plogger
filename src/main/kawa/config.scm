@@ -1,8 +1,11 @@
 (define-library (plogger config)
-  (import (scheme base))
-  (export *config-directory*)
+  (import (kawa base)
+          (kawa lib files))
+  (export config-dir)
   (begin
-    (define *config-directory*
-      (string-append home-directory "/.plogger"))
-    (if (not (file-directory? *config-directory*))
-        (create-directory *config-directory*))))
+    (define (config-dir)
+      (let* ((home (java.lang.System:getProperty "user.home"))
+             (dir (string-append home "/.plogger")))
+        (if (not (file-directory? *conf-dir*))
+            (create-directory *conf-dir*))
+        dir))))
