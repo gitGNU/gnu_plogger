@@ -4,8 +4,8 @@
 
 (define-simple-class db-tests ()
   
-  ((test-db) ::void (@Test)
-   (let* ((db (db-connect))
-          (meta-data (db:getMetaData)))
+  ((test-db-connect) ::void (@Test)
+   (let* ((conn (db-connect))
+          (meta-data (conn:getMetaData)))
      (Assert:assertEquals "SQLite"
                           (meta-data:getDatabaseProductName)))))

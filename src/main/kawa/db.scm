@@ -3,13 +3,10 @@
           (kawa base)
           (plogger config)
           )
-  (export *db* db-connect)
+  (export db-connect)
   (begin
-    (define *db* (db-connect))
+    ;;(define *db* (db-connect))
     (define (db-connect)
-      (let* ((url (format "jdbc:sqlite:~A/plogger.db" *conf-dir*)))
+      (let* ((url (format "jdbc:sqlite:~a/plogger.db" (config-path))))
         (java.lang.Class:forName "org.sqlite.JDBC")
         (DriverManager:getConnection url)))))
-    
-        
-      

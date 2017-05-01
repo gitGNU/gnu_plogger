@@ -5,7 +5,7 @@
 (define-simple-class config-tests ()
   
   ((test-conf-dir) ::void (@Test)
-   (let* ((db (db-connect))
-          (meta-data (db:getMetaData)))
-     (Assert:assertEquals "SQLite"
-                          (meta-data:getDatabaseProductName)))))
+   (let* ((path (config-path))
+          (home (java.lang.System:get-property "user.home"))
+          (expected-path (string-append home "/.plogger")))
+     (Assert:assertEquals expected-path path))))
