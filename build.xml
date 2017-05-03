@@ -174,6 +174,11 @@
 	<formatter type="plain" />
 	<formatter type="xml" />
       </test>
+      <test name="models-tests"
+	    haltonfailure="no" todir="${report.dir}">
+	<formatter type="plain" />
+	<formatter type="xml" />
+      </test>
 
       <!-- not working
 
