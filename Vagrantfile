@@ -67,5 +67,5 @@ Vagrant.configure("2") do |config|
     apt-get update
     apt-get install -y xorg fluxbox virtualbox-guest-dkms virtualbox-guest-utils virtualbox-guest-x11 emacs build-essential openjdk-8-jdk
   SHELL
-  config.vm.provision "shell", path: "install-kawa.sh"
+  config.vm.provision "shell", path: "install-kawa.sh", args: "/home/vagrant"
 end

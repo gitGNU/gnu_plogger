@@ -1,6 +1,8 @@
 #!/bin/bash
 
-ANT_LIB=/home/vagrant/.ant/lib
+# Using parameter as HOME for portability
+HOME=$1
+ANT_LIB=$HOME/.ant/lib
 
 if [ ! -d $ANT_LIB ]; then
 
