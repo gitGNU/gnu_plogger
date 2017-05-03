@@ -4,4 +4,4 @@
   (export hello-plogger)
   (begin
     (define (hello-plogger)
-      (display (string-append "Configuration Directory: " *conf-dir*)))))
+      (display (string-append "Configuration Directory: " (config-path))))))
