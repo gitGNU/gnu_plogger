@@ -6,7 +6,7 @@ ANT_LIB=$HOME/.ant/lib
 
 if [ ! -d $ANT_LIB ]; then
 
-  apt-get install -y ant ivy unzip docbook
+  apt-get install -y ant ivy unzip docbook openjfx
   mkdir -p $ANT_LIB
   ln -s /usr/share/java/ivy.jar $ANT_LIB
   
@@ -25,9 +25,13 @@ if [ ! -d $ANT_LIB ]; then
   ant build-tools
   cd ..
   ln -s kawa-2.4 kawa
-  mkdir -p /home/vagrant/.ivy2/local/kawa/kawa/2.4/jars/
-  ln -s /opt/kawa-2.4/lib/kawa.jar /home/vagrant/.ivy2/local/kawa/kawa/2.4/jars/
-  mkdir -p /home/vagrant/.ivy2/local/kawa/jline/3.2.0/jars/
-  ln -s /opt/kawa-2.4/lib/jline.jar /home/vagrant/.ivy2/local/kawa/jline/3.2.0/jars/
+  mkdir -p $HOME/.ivy2/local/kawa/kawa/2.4/jars/
+  ln -s /opt/kawa-2.4/lib/kawa.jar $HOME/.ivy2/local/kawa/kawa/2.4/jars/
+  mkdir -p $HOME/.ivy2/local/kawa/jline/3.2.0/jars/
+  ln -s /opt/kawa-2.4/lib/jline.jar $HOME/.ivy2/local/kawa/jline/3.2.0/jars/
+
+  if [$HOME == "/home/vagrant"]; then
+      chown -R vagrant.vagrant /home/vagrant/.ivy2
+  fi
   
 fi
